@@ -168,6 +168,37 @@ class Trie {
                  }
                  deletionHelper(key,root,key.length(),0);
         }
+
+         
+        int calculateRootChild(TrieNode * current){
+        int totalChildWords = 0;
+
+        if (current == nullptr){
+            return totalChildWords;
+         }
+
+         if (current->isEndWord){
+            totalChildWords += 1;
+        }
+
+        if (hasNoChildren(current)){
+            return totalChildWords;
+        }
+
+        for (int i  = 0 ; i < ALPHABET_SIZE ; i++){
+                 if (current->children[i] != nullptr) {
+                int totalChild = calculateRootChild(current->children[i]);
+                totalChildWords += totalChild;
+         }
+        }
+        return totalChildWords;
+    }
+
+    int totalWords(TrieNode * root){
+        int result = calculateRootChild(root);
+        return result;
+    }
+
 };
 
 
@@ -194,13 +225,10 @@ int main(){
 
   cout << "Searching : abc" << t->searchKey("abc")<<endl;  
   t->deleteNode("abc");
-cout << "Deleted key \"abc\"" << endl;
+    cout << "Deleted key \"abc\"" << endl;
   if(t->searchKey("abc") == true)
     cout << "not deleted";
   else
     cout << "deleted";
-
-
-    cout << "Searching : abc" << t->searchKey("abc")<<endl; 
   return 0;
 }
