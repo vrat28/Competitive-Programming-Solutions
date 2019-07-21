@@ -97,8 +97,76 @@ class Trie {
             return false;
         }
 
-        bool deleteNode(string key){
-            return true;
+        bool hasNoChildren(TrieNode * node) {
+            bool hasChild = true;
+
+            for (int i = 0 ; i < ALPHABET_SIZE; i++){
+
+                if (node->children[i] != nullptr){
+                    return false;
+                }
+            }
+
+            return hasChild;
+        }
+
+        bool deletionHelper(string key,TrieNode * current,int length, int level ){
+
+                bool isDeletedSelf = false;
+
+                if(length == 0 || key.empty()){
+                    cout << "Empty key";    
+                    return false;
+                }
+
+                if (length == level){
+
+                    if (hasNoChildren(current)){
+
+                        delete current;
+                        current = nullptr;
+                        isDeletedSelf = true;
+                    }
+                    else {
+                        current->unMarkAsLeaf();
+                        isDeletedSelf = false;
+                    }
+
+                }
+                else {
+                        int indexOfChild =  getIndexOfChar(key[level]);
+                        TrieNode * childNode = current->children[indexOfChild];
+                        bool childDeleted = deletionHelper(key,childNode,key.length(),level + 1);
+
+                        if (childDeleted){
+                                current->children[indexOfChild] = nullptr;
+
+                                if (current->isEndOfWord) {
+                                    isDeletedSelf = false;
+                                }
+                                else if (!hasNoChildren(current)){
+                                    isDeletedSelf = false;
+                                }
+                                else {
+                                    current = nullptr;
+                                    isDeletedSelf = true;
+                                }
+                        }
+                        else {
+                            isDeletedSelf = false;
+                        }
+
+
+                }
+            return isDeletedSelf;
+        }
+
+        void deleteNode(string key){
+                 if ((root == NULL) || (key.empty())){
+                     cout << "Null key";
+                     return;
+                 }
+                 deletionHelper(key,root,key.length(),0);
         }
 };
 
@@ -122,7 +190,17 @@ int main(){
   }
 
   cout<< "Searching:====================." << endl;
-  cout << "Searching : " << t->searchKey("theree") << endl;
+ // cout << "Searching : " << t->searchKey("theree") << endl;
 
+  cout << "Searching : abc" << t->searchKey("abc")<<endl;  
+  t->deleteNode("abc");
+cout << "Deleted key \"abc\"" << endl;
+  if(t->searchKey("abc") == true)
+    cout << "not deleted";
+  else
+    cout << "deleted";
+
+
+    cout << "Searching : abc" << t->searchKey("abc")<<endl; 
   return 0;
 }
